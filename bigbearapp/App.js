@@ -5,6 +5,7 @@ import { LogBox } from "react-native";
 import Splash from "./screens/Splash";
 import { StatusBar } from "expo-status-bar";
 import Login from "./screens/Login";
+import KeyboardAvoidingComponent from "./screens/KeyboardAvoidingComponent";
 
 const Stack = createNativeStackNavigator();
 LogBox.ignoreLogs(["AsyncStorage has been extracted from react-na"]);
@@ -23,7 +24,6 @@ export default function App() {
                             gestureEnabled: false,
                         }}
                     ></Stack.Screen>
-
                     <Stack.Screen
                         name="Login"
                         component={Login}

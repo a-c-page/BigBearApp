@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useRef } from "react";
 import {
     Image,
     StyleSheet,
@@ -6,6 +6,9 @@ import {
     TextInput,
     TouchableOpacity,
     View,
+    KeyboardAvoidingView,
+    TouchableWithoutFeedback,
+    Keyboard,
 } from "react-native";
 import { app } from "../firebase";
 import {
@@ -31,9 +34,7 @@ const Login = ({ navigation }) => {
         //         console.log("Logged in with UID: " + user.uid);
         //         navigation.navigate("Start");
         // //     }
-
         // });
-        console.log("yoyoo");
     }, []);
 
     const handleLogin = () => {
@@ -45,69 +46,91 @@ const Login = ({ navigation }) => {
             .catch((error) => alert(error.message));
     };
 
+    const secondInput = useRef(null);
+
     return (
-        <View
+        <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
             style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >
-            {/* Logo Circle */}
-            <View
-                style={{
-                    width: 250,
-                    height: 250,
-                    backgroundColor: colours.white,
-                    borderRadius: 999,
-                    justifyContent: "center",
-                    alignItems: "center",
-                }}
-            >
-                <Image
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                <View
                     style={{
-                        width: 180,
-                        height: 180,
-                        resizeMode: "contain",
-                    }}
-                    source={require("../assets/logo.png")}
-                ></Image>
-            </View>
-
-            <View style={styles.inputContainer}>
-                <TextInput
-                    placeholder="john.appleseed@apple.com"
-                    placeholderTextColor={colours.darkGrey}
-                    value={email}
-                    onChangeText={(text) => setEmail(text)}
-                    style={styles.input}
-                    keyboardType={"email-address"}
-                    returnKeyType={"next"}
-                />
-
-                <TextInput
-                    placeholder="●●●●●●●●"
-                    placeholderTextColor={colours.darkGrey}
-                    value={password}
-                    onChangeText={(text) => setPassword(text)}
-                    style={styles.input}
-                    returnKeyType={"done"}
-                    secureTextEntry
-                />
-
-                <TouchableOpacity
-                    onPress={handleLogin}
-                    style={{
-                        height: 70,
-                        backgroundColor: colours.black,
-                        paddingHorizontal: 25,
-                        borderRadius: 100,
-                        marginVertical: 8,
+                        flex: 1,
                         justifyContent: "center",
                         alignItems: "center",
-                        marginTop: 50,
+                        width: "100%",
                     }}
                 >
-                    <Text style={styles.buttonText}>LOGIN</Text>
-                </TouchableOpacity>
-            </View>
-        </View>
+                    {/* Logo Circle */}
+                    <View
+                        style={{
+                            width: 250,
+                            height: 250,
+                            backgroundColor: colours.white,
+                            borderRadius: 999,
+                            justifyContent: "center",
+                            alignItems: "center",
+                        }}
+                    >
+                        <Image
+                            style={{
+                                width: 180,
+                                height: 180,
+                                resizeMode: "contain",
+                            }}
+                            source={require("../assets/logo.png")}
+                        ></Image>
+                    </View>
+
+                    <View style={styles.inputContainer}>
+                        <TextInput
+                            placeholder="john.appleseed@apple.com"
+                            placeholderTextColor={colours.darkGrey}
+                            value={email}
+                            onChangeText={(text) => setEmail(text)}
+                            style={styles.input}
+                            keyboardType={"email-address"}
+                            returnKeyType={"next"}
+                            onSubmitEditing={() => {
+                                secondInput.current.focus();
+                            }}
+                            blurOnSubmit={false}
+                            textContentType="oneTimeCode"
+                            autoComplete="off"
+                        />
+
+                        <TextInput
+                            placeholder="●●●●●●●●"
+                            placeholderTextColor={colours.darkGrey}
+                            value={password}
+                            onChangeText={(text) => setPassword(text)}
+                            style={styles.input}
+                            returnKeyType={"done"}
+                            secureTextEntry
+                            ref={secondInput}
+                            textContentType="oneTimeCode"
+                        />
+
+                        <TouchableOpacity
+                            onPress={handleLogin}
+                            style={{
+                                height: 70,
+                                backgroundColor: colours.black,
+                                paddingHorizontal: 25,
+                                borderRadius: 100,
+                                marginVertical: 8,
+                                justifyContent: "center",
+                                alignItems: "center",
+                                marginTop: 50,
+                            }}
+                        >
+                            <Text style={styles.buttonText}>LOGIN</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </TouchableWithoutFeedback>
+        </KeyboardAvoidingView>
     );
 };
 
