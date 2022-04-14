@@ -4,10 +4,10 @@ import { app } from "../firebase";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { StateContext } from "./StateProvider";
 import GlobalStyles from "../styles/GlobalStyles";
-import Colours from "../styles/Colours";
+import colours from "../styles/Colours";
 
 const Splash = ({ navigation }) => {
-    const { userID, setUserID, colours } = useContext(StateContext);
+    const { userID, setUserID } = useContext(StateContext);
     const auth = getAuth(app);
 
     useEffect(() => {
@@ -16,20 +16,20 @@ const Splash = ({ navigation }) => {
             if (user) {
                 setUserID(user.uid);
                 console.log("Logged in with UID: " + user.uid);
-                navigateTo = "Start";
+                navigateTo = "Home";
             } else {
                 navigateTo = "Login";
             }
             setTimeout(() => {
                 navigation.navigate(navigateTo);
-            }, 1000);
+            }, 1200);
         });
     }, []);
 
     return (
         <View
             style={{
-                backgroundColor: Colours.white,
+                backgroundColor: colours.white,
                 flex: 1,
                 justifyContent: "center",
                 alignItems: "center",

@@ -21,10 +21,11 @@ import { doc, setDoc, getFirestore, getDoc } from "firebase/firestore";
 import { StateContext } from "./StateProvider";
 import colours from "../styles/Colours";
 
-const Login = ({ navigation }) => {
+const Register = ({ navigation }) => {
     const { setUserID } = useContext(StateContext);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [name, setName] = useState("");
     const auth = getAuth(app);
     const db = getFirestore(app);
 
@@ -40,7 +41,7 @@ const Login = ({ navigation }) => {
             const usersDocRef = doc(db, "users", user.uid);
             const usersDocSnap = await getDoc(usersDocRef);
             if (!usersDocSnap.exists()) {
-                await setDoc(usersDocRef, { verified: false });
+                await setDoc(usersDocRef, { verified: false, name: name });
             }
             alert("User registered. Please wait for verification.");
             signOut(auth);
@@ -50,34 +51,8 @@ const Login = ({ navigation }) => {
         }
     };
 
-    const handleLogin = async () => {
-        try {
-            userCredentials = await signInWithEmailAndPassword(
-                auth,
-                email.trim(),
-                password
-            );
-            const user = userCredentials.user;
-            const usersDocRef = doc(db, "users", user.uid);
-            const usersDocSnap = await getDoc(usersDocRef);
-
-            let info = usersDocSnap.data();
-            if (info["verified"]) {
-                console.log("Logged in: ", user.uid, user.email);
-                navigation.navigate("Home");
-            } else {
-                alert("Not verified!");
-                signOut(auth);
-            }
-        } catch (error) {
-            alert(error);
-            return;
-        }
-    };
-
-    useEffect(async () => {}, []);
-
     const secondInput = useRef(null);
+    const thirdInput = useRef(null);
 
     return (
         <KeyboardAvoidingView
@@ -93,28 +68,22 @@ const Login = ({ navigation }) => {
                         width: "100%",
                     }}
                 >
-                    {/* Logo Circle */}
-                    <View
-                        style={{
-                            width: 250,
-                            height: 250,
-                            backgroundColor: colours.white,
-                            borderRadius: 999,
-                            justifyContent: "center",
-                            alignItems: "center",
-                        }}
-                    >
-                        <Image
-                            style={{
-                                width: 180,
-                                height: 180,
-                                resizeMode: "contain",
-                            }}
-                            source={require("../assets/logo.png")}
-                        ></Image>
-                    </View>
-
                     <View style={styles.inputContainer}>
+                        <TextInput
+                            placeholder="John"
+                            placeholderTextColor={colours.darkGrey}
+                            value={name}
+                            onChangeText={(text) => setName(text)}
+                            style={styles.input}
+                            keyboardType={"default"}
+                            returnKeyType={"next"}
+                            onSubmitEditing={() => {
+                                secondInput.current.focus();
+                            }}
+                            blurOnSubmit={false}
+                            textContentType="oneTimeCode"
+                            autoComplete="off"
+                        />
                         <TextInput
                             placeholder="john.appleseed@apple.com"
                             placeholderTextColor={colours.darkGrey}
@@ -124,11 +93,12 @@ const Login = ({ navigation }) => {
                             keyboardType={"email-address"}
                             returnKeyType={"next"}
                             onSubmitEditing={() => {
-                                secondInput.current.focus();
+                                thirdInput.current.focus();
                             }}
                             blurOnSubmit={false}
                             textContentType="oneTimeCode"
                             autoComplete="off"
+                            ref={secondInput}
                         />
 
                         <TextInput
@@ -139,12 +109,12 @@ const Login = ({ navigation }) => {
                             style={styles.input}
                             returnKeyType={"done"}
                             secureTextEntry
-                            ref={secondInput}
+                            ref={thirdInput}
                             textContentType="oneTimeCode"
                         />
 
                         <TouchableOpacity
-                            onPress={handleLogin}
+                            onPress={handleSignUp}
                             style={{
                                 height: 70,
                                 backgroundColor: colours.black,
@@ -156,36 +126,7 @@ const Login = ({ navigation }) => {
                                 marginTop: 50,
                             }}
                         >
-                            <Text style={styles.buttonText}>LOGIN</Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                            onPress={() => {
-                                navigation.navigate("Register");
-                            }}
-                            style={{
-                                height: 50,
-                                alignContent: "center",
-                                justifyContent: "center",
-                                alignSelf: "center",
-                                marginTop: 10,
-                            }}
-                        >
-                            <Text
-                                style={{
-                                    fontSize: 16,
-                                    color: colours.darkGrey,
-                                }}
-                            >
-                                Don't have an account?{" "}
-                                <Text
-                                    style={{
-                                        color: colours.black,
-                                    }}
-                                >
-                                    Sign Up!
-                                </Text>
-                            </Text>
+                            <Text style={styles.buttonText}>REGISTER</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -194,7 +135,7 @@ const Login = ({ navigation }) => {
     );
 };
 
-export default Login;
+export default Register;
 
 const styles = StyleSheet.create({
     container: {
